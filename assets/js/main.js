@@ -601,7 +601,7 @@ function is_valid_datalist_value(inputValue, cityValue) {
       const MIN_DAYS_SHIPPING = 2
       const MIN_DAYS_RETURN = 3
       const MIN_DAYS_BALLOTS_READY_BEFORE_ELECTION = 30
-      const MIN_DAYS_ORDER_BEFORE_ELECTION = 6
+      const MIN_DAYS_ORDER_BEFORE_ELECTION = 4
       const MAX_DAYS_SHIPMENT_PERIOD = 7
       const MAX_DAYS_PROCESSING = 14
       const MAX_DAYS_SHIPPING = MIN_DAYS_SHIPPING + MAX_DAYS_PROCESSING
