@@ -271,7 +271,10 @@ const identityElements = {
 document.addEventListener("click", (event) => {
   if (event.target.id === "send-email") {
     event.preventDefault();
-    _paq.push(['trackGoal', 3]);
+    /* Make network call in settimeout to avoid cancel on navigate */
+    window.setTimeout(function() {
+      _paq.push(['trackGoal', 3]);
+    }, 10);
     event.target.href = generateMailtoUrl();
     const displayMessage = document.getElementById("final-message");
 
@@ -280,6 +283,7 @@ document.addEventListener("click", (event) => {
     displayMessage.innerHTML =
       "<i class='fas fa-check-circle me-2'></i>" + translatedText;
     displayMessage.classList.add("success");
+
     window.location.href = event.target.href;
   }
 });
