@@ -196,7 +196,8 @@ const elements = {
   copier: document.getElementById("copy-text"),
   email: document.getElementById("email"),
   newsletter: document.getElementById("email-newsletter"),
-  mainform: document.getElementById("main-form")
+  mainform: document.getElementById("main-form"),
+  sendemail: document.getElementById("send-email")
 };
 
 const formElements = {
@@ -268,24 +269,17 @@ const identityElements = {
 };
 
 // --- Mailto URL Generation ---
-document.addEventListener("click", (event) => {
-  if (event.target.id === "send-email") {
-    event.preventDefault();
-    /* Make network call in settimeout to avoid cancel on navigate */
-    window.setTimeout(function() {
-      _paq.push(['trackGoal', 3]);
-    }, 10);
-    event.target.href = generateMailtoUrl();
-    const displayMessage = document.getElementById("final-message");
+elements.sendemail.addEventListener("click", (event) => {
+  _paq.push(['trackGoal', 3]);
+  
+  event.target.href = generateMailtoUrl();
 
-    // Get translated text from the hidden element:
-    const translatedText = getTranslation("translation-sent");
-    displayMessage.innerHTML =
-      "<i class='fas fa-check-circle me-2'></i>" + translatedText;
-    displayMessage.classList.add("success");
-
-    window.location.href = event.target.href;
-  }
+  const displayMessage = document.getElementById("final-message");
+  // Get translated text from the hidden element:
+  const translatedText = getTranslation("translation-sent");
+  displayMessage.innerHTML =
+    "<i class='fas fa-check-circle me-2'></i>" + translatedText;
+  displayMessage.classList.add("success");
 });
 
 // --- Clipboard Functionality ---
