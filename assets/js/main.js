@@ -150,6 +150,15 @@ const elections = [
   date: new Date(e.date)
 }))
 
+let pageData = null
+const pageDataJson = document.getElementById('page-data')
+if (pageDataJson) {
+  pageData = JSON.parse(pageDataJson.textContent);
+  if (pageData.election) {
+    pageData.election.date = new Date(pageData.election.date)
+  }
+}
+
 
 // --- DOM Elements ---
 
@@ -187,7 +196,8 @@ const elements = {
   copier: document.getElementById("copy-text"),
   email: document.getElementById("email"),
   newsletter: document.getElementById("email-newsletter"),
-  mainform: document.getElementById("main-form")
+  mainform: document.getElementById("main-form"),
+  sendemail: document.getElementById("send-email")
 };
 
 const formElements = {
@@ -259,15 +269,17 @@ const identityElements = {
 };
 
 // --- Mailto URL Generation ---
-document.addEventListener("click", (event) => {
-  if (event.target.id === "send-email") {
-    event.preventDefault();
-    event.target.href = generateMailtoUrl();
-    const displayMessage = document.getElementById("final-message");
-    displayMessage.innerHTML = "<i class='fas fa-check-circle me-2'></i>Sent!";
-    displayMessage.classList.add("success");
-    window.location.href = event.target.href;
-  }
+elements.sendemail.addEventListener("click", (event) => {
+  _paq.push(['trackGoal', 3]);
+  
+  event.target.href = generateMailtoUrl();
+
+  const displayMessage = document.getElementById("final-message");
+  // Get translated text from the hidden element:
+  const translatedText = getTranslation("translation-sent");
+  displayMessage.innerHTML =
+    "<i class='fas fa-check-circle me-2'></i>" + translatedText;
+  displayMessage.classList.add("success");
 });
 
 // --- Clipboard Functionality ---
@@ -485,7 +497,9 @@ function navigateTo(step, nohistory) {
 
   const tab = new bootstrap.Tab(document.querySelector(`#step-${step}-tab`));
   tab.show();
-  scrollTop();
+  window.setTimeout(() => {
+    scrollTop()
+  }, 200)
 
   // Update element visibility based on step and screen size
   const isMobile = window.matchMedia("(max-width: 768px)").matches;
@@ -539,6 +553,7 @@ function secondpage() {
 
   if (data.zip.length >= 5 && is_valid_datalist_value(data.zip, data.city)) {
     navigateTo(2);
+    _paq.push(['trackGoal', 1]);
   }
 }
 
@@ -593,7 +608,12 @@ function is_valid_datalist_value(inputValue, cityValue) {
 
     // Hide all
     document.querySelectorAll("#election-hints .election-hint").forEach((el) => {el.style.display = "none"})
-    selectedElection = elections.filter(e => e.state === data.state)[0]
+    if (pageData !== null) {
+      selectedElection = pageData.election
+    } else {
+      selectedElection = elections.filter(e => e.state === data.state)[0]
+    }
+
     if (selectedElection == undefined) {
       document.getElementById("election-hint-none").style.display = "block"
     } else {
@@ -746,6 +766,12 @@ elements.searchInput?.addEventListener("keyup", (e) => {
       return div;
     });
 
+    if (pageData && pageData.limitArs && matchArray.length <= 0) {
+        elements.suggestions.innerHTML =
+          "<div class='error'><i class='fas fa-times-circle me-2'></i><span>" + getTranslation("right.zipNotFound") + "</span></div>";
+      return;
+    }
+
     if (matchArray.length <= 0) {
         elements.suggestions.innerHTML =
           "<div class='error'><i class='fas fa-times-circle me-2'></i><span>" + getTranslation("right.invalidZipcode") + "</span></div>";
@@ -755,22 +781,6 @@ elements.searchInput?.addEventListener("keyup", (e) => {
     elements.suggestions.innerHTML = "";
     elements.suggestions.append(...suggestionDivs);
   }, 50);
-});
-
-// --- Event Delegation for Mailto Link ---
-document.addEventListener("click", (event) => {
-  if (event.target.id === "send-email") {
-    event.preventDefault();
-    event.target.href = generateMailtoUrl();
-    const displayMessage = document.getElementById("final-message");
-
-    // Get translated text from the hidden element:
-    const translatedText = getTranslation("translation-sent");
-
-    displayMessage.innerHTML =
-      "<i class='fas fa-check-circle me-2'></i>" + translatedText;
-    displayMessage.classList.add("success");
-  }
 });
 
 if (elements.copier) {
@@ -807,9 +817,12 @@ if (elements.copier) {
 })();
 
 function findMatches(keyword, zips) {
-  return zips.filter((place) =>
-    place.PLZ.toLowerCase().startsWith(keyword.toLowerCase())
-  );
+  return zips.filter((place) => {
+    if (pageData && pageData.limitArs && !pageData.limitArs.includes(place.ars)) {
+      return false
+    }
+    return place.PLZ.toLowerCase().startsWith(keyword.toLowerCase())
+  });
 }
 
 // --- Initial Setup ---
@@ -969,5 +982,23 @@ if (elements.mainform) {
     }
     sendEmailRequest()
     thirdpage()
+    _paq.push(['trackGoal', 2]);
   })
 }
+
+var _paq = window._paq = window._paq || [];
+/* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+_paq.push(['trackPageView']);
+_paq.push(['enableLinkTracking']);
+
+(function() {
+  var u="https://traffic.okfn.de/";
+  _paq.push(['setTrackerUrl', u+'matomo.php']);
+  _paq.push(['setDomains', [document.location.host]])
+  _paq.push(['disableCookies'])
+  _paq.push(['disableBrowserFeatureDetection'])
+
+  _paq.push(['setSiteId', '61']);
+  var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+  g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+})();
