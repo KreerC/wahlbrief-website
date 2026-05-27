@@ -617,23 +617,44 @@ function is_valid_datalist_value(inputValue, cityValue) {
     if (selectedElection == undefined) {
       document.getElementById("election-hint-none").style.display = "block"
     } else {
-      const MIN_DAYS = 6
-      const MIN_SHIPPING_DAYS = 3
+      const CUTOFF_HOUR = 10 // 10 AM
+      const MIN_DAYS_SHIPPING = 2
+      const MIN_DAYS_RETURN = 3
+      const MIN_DAYS_BALLOTS_READY_BEFORE_ELECTION = 30
+      const MIN_DAYS_ORDER_BEFORE_ELECTION = 4
+      const MAX_DAYS_SHIPMENT_PERIOD = 7
+      const MAX_DAYS_PROCESSING = 14
+      const MAX_DAYS_SHIPPING = MIN_DAYS_SHIPPING + MAX_DAYS_PROCESSING
+      
       const day = 1000 * 60 * 60 * 24
       const todayDate = new Date()
-      const today = todayDate.getTime()
+      const today = todayDate.getTime() + (todayDate.getHours() >= CUTOFF_HOUR ? day : 0)
       const electionTime = selectedElection.date.getTime()
-      const shippingDateMin = Math.max(today + (3 * day), electionTime - (30 * day))
-      const shippingDateMax = Math.max(shippingDateMin, Math.min(today + (21 * day), electionTime - (MIN_SHIPPING_DAYS * day)))
       const daysLeft = Math.floor((electionTime - today) / day)
-      let arrival
-      if (shippingDateMin === shippingDateMax) {
-        arrival = `${formatDate(shippingDateMin)}`
-      } else {
-        arrival = `${formatDate(shippingDateMin)} – ${formatDate(shippingDateMax)}`
-      }
+      
+      const shiftSundays = d => d + (new Date(d).getDay() === 0 ? day : 0)
+      const shiftWeekends = d => shiftSundays(d) + (new Date(shiftSundays(d)).getDay() === 6 ? (2 * day) : 0)
+      const shippingDateMin = shiftSundays(
+        Math.max(
+          shiftWeekends(today) + (MIN_DAYS_SHIPPING * day), electionTime - (MIN_DAYS_BALLOTS_READY_BEFORE_ELECTION * day)
+        )
+      )
+      const shippingDateMax = shiftSundays(
+        Math.max(
+          shippingDateMin, Math.min(
+            electionTime - (MIN_DAYS_RETURN * day), Math.max(
+              shippingDateMin + (MAX_DAYS_SHIPMENT_PERIOD * day), today + (MAX_DAYS_SHIPPING * day)
+            )
+          )
+        )
+      )
+      
+      const arrival = (shippingDateMin === shippingDateMax) ?
+        `${formatDate(shippingDateMin)}` :
+        `${formatDate(shippingDateMin)} – ${formatDate(shippingDateMax)}`
       document.getElementById("arrival-date").innerText = arrival
-      if (daysLeft < MIN_DAYS) {
+      
+      if (daysLeft < MIN_DAYS_ORDER_BEFORE_ELECTION) {
         document.getElementById("election-hint-late").style.display = "block"
       } else {
         document.getElementById("election-hint-normal").style.display = "block"
