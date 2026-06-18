@@ -5,15 +5,14 @@ left:
   subtitle: |
     <p>These elections will still take place in 2026:</p>
     <ul>
-    <li>On 8 March 2026, there will be state elections in Baden-Württemberg.</li
-    <li>On 22 March 2026, there will be state elections in Rhineland-Palatinate.</li>
+      <li>On 6 September 2026, there will be state elections in <b>Sachsen-Anhalt</b></li>
+      <li>On 13 September 2026, there will be local elections in <b>Niedersachsen</b></li>
+      <li>On 20 September 2026, there will be state elections in <b>Berlin</b></li>
+      <li>On 20 September 2026, there will be state elections in <b>Mecklenburg-Vorpommern</b></li>
     </ul>
     <p>
     Votes can be cast in advance by postal vote. It only takes 2 minutes to apply for the required documents by email.
-    <br /><br />
-    <!-- <b>Mail your voted ballot before 20 February or drop off your ballot at the election office until Sunday 6pm.</b>
-    <br /><br />  -->
-    <small>The documents are delivered within few days.</small>
+    </p>
   preview: "Preview: Postal vote application"
   home: "Home"
   about: "About"
