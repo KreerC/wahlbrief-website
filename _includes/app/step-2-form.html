@@ -3,18 +3,14 @@
         <div class="col-12 col-lg-6 mb-3 mb-lg-0">
             <div class="form-floating">
                 <input type="text" class="form-control" id="form-name" maxlength="60"
-                    placeholder="{% t right.firstname %}"
-                    aria-label="{% t right.firstname %}"
-                    aria-describedby="{% t right.firstname %}">
+                    placeholder="{% t right.firstname %}">
                 <label for="form-name">{% t right.firstname %}</label>
             </div>
         </div>
         <div class="col-12 col-lg-6">
             <div class="form-floating">
                 <input type="text" class="form-control" id="form-surname" maxlength="60"
-                    placeholder="{% t right.lastname %}"
-                    aria-label="{% t right.lastname %}"
-                    aria-describedby="{% t right.lastname %}">
+                    placeholder="{% t right.lastname %}">
                 <label for="form-surname">{% t right.lastname %}</label>
             </div>
         </div>
@@ -27,9 +23,7 @@
                     <input type="text" class="form-control" id="form-day"
                         onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))"
                         pattern="(0[1-9]|[12]\d|3[01])" inputmode="numeric"
-                        minlength="1" maxlength="2" placeholder="{% t right.day %}"
-                        aria-label="{% t right.day %}"
-                        aria-describedby="{% t right.day %}">
+                        minlength="1" maxlength="2" placeholder="{% t right.day %}">
                     <label for="form-day">{% t right.day %}</label>
                 </div>
             </div>
@@ -38,9 +32,7 @@
                     <input type="text" class="form-control" id="form-month"
                         onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))"
                         pattern="(0[1-9]|1[012])" inputmode="numeric" minlength="1"
-                        maxlength="2" placeholder="{% t right.month %}"
-                        aria-label="{% t right.month %}"
-                        aria-describedby="{% t right.month %}">
+                        maxlength="2" placeholder="{% t right.month %}">
                     <label for="form-month">{% t right.month %}</label>
                 </div>
             </div>
@@ -50,8 +42,7 @@
                         onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))"
                         pattern="^((200[0-7])|(19[0-9]{2})|(189[0-9]))$"
                         inputmode="numeric" minlength="4" maxlength="4"
-                        placeholder="{% t right.year %}" aria-label="{% t right.year %}"
-                        aria-describedby="{% t right.year %}">
+                        placeholder="{% t right.year %}">
                     <label for="form-year">{% t right.year %}</label>
                 </div>
             </div>
@@ -63,8 +54,6 @@
                 <input type="text" class="form-control" id="form-street"
                     maxlength="60"
                     placeholder="{% t right.shipping.street %}"
-                    aria-label="{% t right.shipping.street %}"
-                    aria-describedby="{% t right.shipping.street %}">
                 <label for="form-street">{% t right.shipping.street %}</label>
             </div>
         </div>
@@ -76,17 +65,13 @@
                     onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))"
                     id="form-zip" inputmode="numeric" minlength="5" maxlength="5"
                     pattern="[0-9]{5}" placeholder="{% t right.shipping.zipcode %}"
-                    aria-label="{% t right.shipping.zipcode %}"
-                    aria-describedby="{% t right.shipping.zipcode %}">
                 <label for="form-zip">{% t right.shipping.zipcode %}</label>
             </div>
         </div>
         <div class="col-12 col-md-8">
             <div class="form-floating">
                 <input type="text" class="form-control" id="form-city" minlength="2"
-                    maxlength="60" placeholder="{% t right.shipping.city %}"
-                    aria-label="{% t right.shipping.city %}"
-                    aria-describedby="{% t right.shipping.city %}">
+                    maxlength="60" placeholder="{% t right.shipping.city %}">
                 <label for="form-city">{% t right.shipping.city %}</label>
             </div>
         </div>
@@ -149,8 +134,7 @@
 
             <div class="form-floating">
                 <input type="email" name="email" class="form-control" id="email"
-                    placeholder="{% t right.email %}" aria-label="{% t right.email %}"
-                    aria-describedby="{% t right.email %}">
+                    placeholder="{% t right.email %}">
                 <label for="email">{% t right.email %}</label>
             </div>
 
