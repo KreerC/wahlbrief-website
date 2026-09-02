@@ -3,6 +3,7 @@
         <div class="col-12 col-lg-6 mb-3 mb-lg-0">
             <div class="form-floating">
                 <input type="text" class="form-control" id="form-name" maxlength="60"
+                    autocomplete="given-name"
                     placeholder="{% t right.firstname %}">
                 <label for="form-name">{% t right.firstname %}</label>
             </div>
@@ -10,6 +11,7 @@
         <div class="col-12 col-lg-6">
             <div class="form-floating">
                 <input type="text" class="form-control" id="form-surname" maxlength="60"
+                    autocomplete="family-name"
                     placeholder="{% t right.lastname %}">
                 <label for="form-surname">{% t right.lastname %}</label>
             </div>
@@ -20,7 +22,7 @@
         <div class="row my-2 gx-1">
             <div class="col-4 col-lg-4">
                 <div class="form-floating">
-                    <input type="text" class="form-control" id="form-day"
+                    <input type="text" class="form-control" id="form-day" autocomplete="bday-day"
                         onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))"
                         pattern="(0[1-9]|[12]\d|3[01])" inputmode="numeric"
                         minlength="1" maxlength="2" placeholder="{% t right.day %}">
@@ -29,7 +31,7 @@
             </div>
             <div class="col-4 col-lg-4">
                 <div class="form-floating">
-                    <input type="text" class="form-control" id="form-month"
+                    <input type="text" class="form-control" id="form-month" autocomplete="bday-month"
                         onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))"
                         pattern="(0[1-9]|1[012])" inputmode="numeric" minlength="1"
                         maxlength="2" placeholder="{% t right.month %}">
@@ -38,7 +40,7 @@
             </div>
             <div class="col-4 col-lg-4">
                 <div class="form-floating">
-                    <input type="text" class="form-control" id="form-year"
+                    <input type="text" class="form-control" id="form-year" autocomplete="bday-year"
                         onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))"
                         pattern="^((200[0-7])|(19[0-9]{2})|(189[0-9]))$"
                         inputmode="numeric" minlength="4" maxlength="4"
@@ -51,7 +53,7 @@
     <div class="row mt-3">
         <div class="col-12 col-lg-12 mb-0">
             <div class="form-floating">
-                <input type="text" class="form-control" id="form-street"
+                <input type="text" class="form-control" id="form-street" autocomplete="street-address"
                     maxlength="60"
                     placeholder="{% t right.shipping.street %}">
                 <label for="form-street">{% t right.shipping.street %}</label>
@@ -133,7 +135,7 @@
             <p class="mb-1">{% t right.email-reminder-description %}</p>
 
             <div class="form-floating">
-                <input type="email" name="email" class="form-control" id="email"
+                <input type="email" name="email" class="form-control" id="email" autocomplete="email"
                     placeholder="{% t right.email %}">
                 <label for="email">{% t right.email %}</label>
             </div>
