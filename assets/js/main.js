@@ -96,6 +96,15 @@ function validateInput(inputElement, regex) {
   if (inputElement) {
     const isValid = regex.test(inputElement.value);
     inputElement.classList.toggle("is-invalid", !isValid);
+    setAriaInvalid(inputElement, !isValid);
+  }
+}
+
+function setAriaInvalid(inputElement, isInvalid) {
+  if (isInvalid) {
+    inputElement.setAttribute("aria-invalid", "true");
+  } else {
+    inputElement.removeAttribute("aria-invalid");
   }
 }
 
@@ -459,6 +468,7 @@ elements.allBirthdayInputs.forEach((input) => {
     const allValid = elements.allBirthdayInputs.every(
       (inp) => inp && inp.validity.valid && inp.value.length > 0
     );
+    let invalidDate = false;
 
     // Add the custom validation for the election date
     if (allValid) {
@@ -467,9 +477,18 @@ elements.allBirthdayInputs.forEach((input) => {
       const year = parseInt(formValues.year, 10);
 
       if (!isValidBirthday(day, month, year)) {
-        elements.birthdayForm.style.boxShadow = "0 0 0 0.15rem red";
-        return;
+        invalidDate = true;
       }
+    }
+
+    elements.allBirthdayInputs.forEach((birthdayInput) => {
+      const isInvalid = birthdayInput.value.length > 0 && !birthdayInput.validity.valid;
+      setAriaInvalid(birthdayInput, isInvalid || invalidDate);
+    });
+
+    if (invalidDate) {
+      elements.birthdayForm.style.boxShadow = "0 0 0 0.15rem red";
+      return;
     }
 
     elements.birthdayForm.style.boxShadow = allValid
@@ -481,7 +500,7 @@ elements.allBirthdayInputs.forEach((input) => {
 // --- Navigation Functions ---
 
 function scrollTop() {
-  document.getElementById("right-side").scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" })
+  document.getElementById("main-content").scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" })
 }
 
 window.addEventListener("popstate", (event) => {
@@ -562,8 +581,10 @@ function getPostcodeValues() {
 function secondpage() {
   onEnter(); // Select an active or unambiguous suggestion first.
   const data = getPostcodeValues()
+  const isValid = data.zip.length >= 5 && is_valid_datalist_value(data.zip, data.city)
+  setAriaInvalid(elements.searchInput, !isValid)
 
-  if (data.zip.length >= 5 && is_valid_datalist_value(data.zip, data.city)) {
+  if (isValid) {
     navigateTo(2);
     _paq.push(['trackGoal', 1]);
   }
@@ -780,6 +801,7 @@ elements.searchInput?.addEventListener("keyup", (e) => {
         selectedEmail = place["E-Mail"];
         selectedPlace = place
         elements.suggestions.innerHTML = "";
+        setAriaInvalid(elements.searchInput, false);
         elements.searchInput.setAttribute("aria-expanded", "false");
         elements.searchInput.removeAttribute("aria-activedescendant");
       });
@@ -790,6 +812,7 @@ elements.searchInput?.addEventListener("keyup", (e) => {
     if (pageData && pageData.limitArs && matchArray.length <= 0) {
       elements.suggestions.innerHTML =
         "<div class='error' role='alert'><i class='fas fa-times-circle me-2' aria-hidden='true'></i><span>" + getTranslation("right.zipNotFound") + "</span></div>";
+      setAriaInvalid(elements.searchInput, true);
       elements.searchInput.setAttribute("aria-expanded", "false");
       return;
     }
@@ -797,10 +820,12 @@ elements.searchInput?.addEventListener("keyup", (e) => {
     if (matchArray.length <= 0) {
       elements.suggestions.innerHTML =
         "<div class='error' role='alert'><i class='fas fa-times-circle me-2' aria-hidden='true'></i><span>" + getTranslation("right.invalidZipcode") + "</span></div>";
+      setAriaInvalid(elements.searchInput, true);
       elements.searchInput.setAttribute("aria-expanded", "false");
       return;
     }
 
+    setAriaInvalid(elements.searchInput, false);
     elements.suggestions.innerHTML = "";
     elements.suggestions.append(...suggestionDivs);
     elements.searchInput.setAttribute("aria-expanded", "true");
@@ -996,9 +1021,20 @@ if (elements.newsletter) {
     } else {
       elements.email.removeAttribute("required")
     }
+    setAriaInvalid(elements.email, !elements.email.validity.valid)
   })
 }
 if (elements.mainform) {
+  elements.mainform.addEventListener("invalid", (e) => {
+    setAriaInvalid(e.target, true)
+  }, true)
+
+  elements.mainform.addEventListener("input", (e) => {
+    if (e.target.validity && !elements.allBirthdayInputs.includes(e.target)) {
+      setAriaInvalid(e.target, !e.target.validity.valid)
+    }
+  })
+
   elements.mainform.addEventListener("submit", (e) => {
     e.preventDefault()
     if (!elements.mainform.checkValidity()) {
