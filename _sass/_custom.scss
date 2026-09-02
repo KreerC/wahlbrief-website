@@ -523,6 +523,8 @@ input[type="number"] {
   }
   &-active {
     background-color: lighten($secondary, 55%) !important;
+    outline: 0.2rem solid #094f9e;
+    outline-offset: -0.2rem;
   }
 }
 

@@ -53,7 +53,7 @@
             <div class="form-floating">
                 <input type="text" class="form-control" id="form-street"
                     maxlength="60"
-                    placeholder="{% t right.shipping.street %}"
+                    placeholder="{% t right.shipping.street %}">
                 <label for="form-street">{% t right.shipping.street %}</label>
             </div>
         </div>
@@ -64,7 +64,7 @@
                 <input type="text" class="form-control"
                     onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))"
                     id="form-zip" inputmode="numeric" minlength="5" maxlength="5"
-                    pattern="[0-9]{5}" placeholder="{% t right.shipping.zipcode %}"
+                    pattern="[0-9]{5}" placeholder="{% t right.shipping.zipcode %}">
                 <label for="form-zip">{% t right.shipping.zipcode %}</label>
             </div>
         </div>
