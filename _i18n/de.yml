@@ -194,5 +194,6 @@ donate:
     text: ""
 nav:
   close: "Schließen"
+  open: "Menü öffnen"
   navigation: "Seitennavigation"
   skip: "Zum Inhalt springen"

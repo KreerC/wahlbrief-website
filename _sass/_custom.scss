@@ -210,6 +210,12 @@ a {
   border-radius: 0.25rem;
 }
 
+#dropdownMenu2:focus-visible,
+#dropdownMenu3:focus-visible {
+  outline: 0.2rem solid currentColor;
+  outline-offset: 0.15rem;
+}
+
 .background-white {
   background-color: $white;
 }
