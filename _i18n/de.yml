@@ -194,3 +194,5 @@ donate:
     text: ""
 nav:
   close: "Schließen"
+  navigation: "Seitennavigation"
+  skip: "Zum Inhalt springen"

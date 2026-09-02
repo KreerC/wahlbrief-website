@@ -195,3 +195,5 @@ donate:
     text: ""
 nav:
   close: "Close"
+  navigation: "Site navigation"
+  skip: "Skip to content"

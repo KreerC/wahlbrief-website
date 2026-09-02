@@ -17,6 +17,24 @@ body {
   color: $gray-900;
 }
 
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 1100;
+  padding: 0.75rem 1rem;
+  color: $white;
+  background-color: $secondary;
+  transform: translateY(calc(-100% - 1rem));
+
+  &:focus {
+    color: $white;
+    outline: 0.2rem solid $white;
+    outline-offset: 0.15rem;
+    transform: translateY(0);
+  }
+}
+
 .faded {
   animation: fadein 1s;
 }
