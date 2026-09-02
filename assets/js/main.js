@@ -497,9 +497,6 @@ function navigateTo(step, nohistory) {
 
   const tab = new bootstrap.Tab(document.querySelector(`#step-${step}-tab`));
   tab.show();
-  window.setTimeout(() => {
-    scrollTop()
-  }, 200)
 
   // Update element visibility based on step and screen size
   const isMobile = window.matchMedia("(max-width: 768px)").matches;
@@ -533,6 +530,20 @@ function navigateTo(step, nohistory) {
       setDisplayStyle(elements.outroBottom, isMobile ? "block" : "none");
       break;
   }
+
+  window.setTimeout(() => {
+    scrollTop()
+    const heading = isMobile && step === 2
+      ? elements.addressMobile.querySelector("h2")
+      : isMobile && step === 3
+        ? elements.previewMobile.querySelector("h2")
+        : document.querySelector(`#step-${step} h2`)
+
+    if (heading) {
+      heading.setAttribute("tabindex", "-1")
+      heading.focus()
+    }
+  }, 200)
 }
 
 function getPostcodeValues() {
@@ -549,6 +560,7 @@ function getPostcodeValues() {
 }
 
 function secondpage() {
+  onEnter(); // Select an active or unambiguous suggestion first.
   const data = getPostcodeValues()
 
   if (data.zip.length >= 5 && is_valid_datalist_value(data.zip, data.city)) {
@@ -583,7 +595,6 @@ let selectedPlace = null
 let selectedElection
 
 function is_valid_datalist_value(inputValue, cityValue) {
-  onEnter(); // Selects the item even if suggestion is not selected
   const filtered = zips.filter(
     (item) =>
       item.PLZ.toString() == inputValue &&
@@ -675,46 +686,48 @@ function is_valid_datalist_value(inputValue, cityValue) {
 let activeSuggestionIndex = -1;
 
 function setFocusOnSuggestion() {
-  const suggestionItems = Array.from(elements.suggestions.children);
+  const suggestionItems = Array.from(elements.suggestions.querySelectorAll('[role="option"]'));
   const numSuggestions = suggestionItems.length;
 
   if (numSuggestions === 0) return;
 
   if (activeSuggestionIndex >= 0) {
-    activeSuggestionIndex %= numSuggestions;
-    suggestionItems.forEach((child) =>
-      child.classList.remove("autocomplete-active")
-    );
-    suggestionItems[activeSuggestionIndex].classList.add("autocomplete-active");
+    activeSuggestionIndex = activeSuggestionIndex % numSuggestions;
+    suggestionItems.forEach((child) => {
+      child.classList.remove("autocomplete-active");
+      child.setAttribute("aria-selected", "false");
+    });
+    const activeSuggestion = suggestionItems[activeSuggestionIndex];
+    activeSuggestion.classList.add("autocomplete-active");
+    activeSuggestion.setAttribute("aria-selected", "true");
+    elements.searchInput.setAttribute("aria-activedescendant", activeSuggestion.id);
   }
 }
 
 function onEnter() {
-  const suggestionItems = Array.from(elements.suggestions.children);
+  const suggestionItems = Array.from(elements.suggestions.querySelectorAll('[role="option"]'));
   const numSuggestions = suggestionItems.length;
 
   if (numSuggestions === 0) return;
 
-  if (numSuggestions === 1) {
-    activeSuggestionIndex %= numSuggestions;
-    suggestionItems[activeSuggestionIndex].click();
-    setTimeout(secondpage, 300);
+  if (numSuggestions === 1 && activeSuggestionIndex < 0) {
+    activeSuggestionIndex = 0;
   }
 
-  if (activeSuggestionIndex > 1) {
-    activeSuggestionIndex %= numSuggestions;
+  if (activeSuggestionIndex >= 0) {
+    activeSuggestionIndex = activeSuggestionIndex % numSuggestions;
     suggestionItems[activeSuggestionIndex].click();
-    elements.searchInput.addEventListener("keyup", (e) => {
-      if (e.keyCode === 13) {
-        e.target.removeEventListener("keyup", arguments.callee);
-        secondpage();
-        activeSuggestionIndex = -1;
-      }
-    });
+    activeSuggestionIndex = -1;
   }
 }
 
 let suggestionTimeout;
+
+elements.searchInput?.addEventListener("keydown", (e) => {
+  if (["ArrowDown", "ArrowUp", "Enter"].includes(e.key) && elements.searchInput.getAttribute("aria-expanded") === "true") {
+    e.preventDefault();
+  }
+});
 
 elements.searchInput?.addEventListener("keyup", (e) => {
   suggestionTimeout && clearTimeout(suggestionTimeout);
@@ -726,60 +739,71 @@ elements.searchInput?.addEventListener("keyup", (e) => {
         setFocusOnSuggestion();
         return;
       case 38: // Up arrow
-        activeSuggestionIndex--;
+        activeSuggestionIndex = activeSuggestionIndex <= 0
+          ? elements.suggestions.children.length - 1
+          : activeSuggestionIndex - 1;
         setFocusOnSuggestion();
         return;
       case 13: // Enter
-        onEnter();
+        secondpage();
         return;
       case 27: // Escape
-        e.target.value = "";
         elements.suggestions.innerHTML = "";
+        elements.searchInput.setAttribute("aria-expanded", "false");
+        elements.searchInput.removeAttribute("aria-activedescendant");
         return;
     }
 
     activeSuggestionIndex = -1;
+    elements.searchInput.removeAttribute("aria-activedescendant");
 
     if (!e.target.value) {
       elements.suggestions.innerHTML = "";
+      elements.searchInput.setAttribute("aria-expanded", "false");
       return;
     }
 
     const matchArray = findMatches(e.target.value, zips);
-    const suggestionDivs = matchArray.map((place) => {
+    const suggestionDivs = matchArray.map((place, index) => {
       const div = document.createElement("div");
       const nameSpan = document.createElement("span");
       const value = `${place.PLZ} ${place.ORT}`;
 
+      div.id = `autocomplete-option-${index}`;
+      div.setAttribute("role", "option");
+      div.setAttribute("aria-selected", "false");
       nameSpan.innerText = value;
       div.appendChild(nameSpan);
-
-      elements.searchInput.scrollIntoView();
 
       div.addEventListener("click", () => {
         elements.searchInput.value = value;
         selectedEmail = place["E-Mail"];
         selectedPlace = place
         elements.suggestions.innerHTML = "";
+        elements.searchInput.setAttribute("aria-expanded", "false");
+        elements.searchInput.removeAttribute("aria-activedescendant");
       });
 
       return div;
     });
 
     if (pageData && pageData.limitArs && matchArray.length <= 0) {
-        elements.suggestions.innerHTML =
-          "<div class='error'><i class='fas fa-times-circle me-2'></i><span>" + getTranslation("right.zipNotFound") + "</span></div>";
+      elements.suggestions.innerHTML =
+        "<div class='error' role='alert'><i class='fas fa-times-circle me-2' aria-hidden='true'></i><span>" + getTranslation("right.zipNotFound") + "</span></div>";
+      elements.searchInput.setAttribute("aria-expanded", "false");
       return;
     }
 
     if (matchArray.length <= 0) {
-        elements.suggestions.innerHTML =
-          "<div class='error'><i class='fas fa-times-circle me-2'></i><span>" + getTranslation("right.invalidZipcode") + "</span></div>";
+      elements.suggestions.innerHTML =
+        "<div class='error' role='alert'><i class='fas fa-times-circle me-2' aria-hidden='true'></i><span>" + getTranslation("right.invalidZipcode") + "</span></div>";
+      elements.searchInput.setAttribute("aria-expanded", "false");
       return;
     }
 
     elements.suggestions.innerHTML = "";
     elements.suggestions.append(...suggestionDivs);
+    elements.searchInput.setAttribute("aria-expanded", "true");
   }, 50);
 });
 
