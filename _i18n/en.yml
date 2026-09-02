@@ -76,6 +76,7 @@ right:
   preview-address: "Address goes here. Lorem ipsum 65124"
   subject: "Antrag auf Briefwahlunterlagen"
   send: "Send e-mail"
+  sendScreenreader: "Open in email app"
   copy: "Copy text"
   back: "Back"
   message:
